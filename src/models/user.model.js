@@ -1,11 +1,11 @@
 import {Schema,model} from "mongoose";
 
 const userSchema = new Schema({
-    fullname: {
+    firstName: {
         type: String,
         required: true,
     },
-    username:{
+    lastName: {
         type: String,
         required: true,
     },
@@ -19,11 +19,19 @@ const userSchema = new Schema({
     },
     role:{
         type: String,
-        required: true,
+        enum:['student', 'owner'],
+        required:true
+    },
+    idProof: {
+        type: String,
+    },
+    verified:{
+        type:Boolean,
+        default:false
     },
     avatar:{
         type:String
-    }
+    },
 })
 const User = model('User', userSchema);
 
