@@ -16,20 +16,17 @@ const addCollege = async (req, res) => {
         location,
         address,
         })
-
+        
         res.status(200).json({
         message:"Listing added successfully",
         newCollege
         }
         )
     } catch (error) {
-        console.log("error while adding listing: "+error)
+        res.status(501).json({message:"error while adding listing: "})
     }
 }
-const listingByID = async (req,res)=>{
-    
-}
- const deleteListing = async (req,res)=>{
+ const deleteCollege = async (req,res)=>{
     if(req.params.listingID){
         res.json("listing by ID not implemented")
     }
@@ -37,7 +34,7 @@ const listingByID = async (req,res)=>{
         res.status(500).json("not implemented")
     }
 }
- const updateListing = async (req,res)=>{
+ const updateCollege = async (req,res)=>{
     if(req.params.listingID){
         res.json("listing by ID not implemented")
     }
@@ -45,7 +42,7 @@ const listingByID = async (req,res)=>{
         res.status(500).json("not implemented")
     }
 }
-const allListing = async (req,res)=>{
+const allCollege = async (req,res)=>{
         // sorting filtering pagination
         
 }
@@ -53,8 +50,7 @@ const allListing = async (req,res)=>{
 export 
 {
     addCollege,
-    allListing,
-    deleteListing,
-    updateListing,
-    listingByID,
+    allCollege,
+    deleteCollege,
+    updateCollege,
 }

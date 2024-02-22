@@ -6,7 +6,7 @@ import {
     listingByID,
     listingsNear
 } from "../controllers/listing.controller.js";
-
+import { upload } from "../utils/multer.js";
 import { Router } from "express";
 
 const router = Router();
@@ -25,12 +25,7 @@ router
 .get('/search/:lat/:long/:dist',listingsNear);
 
 //Create listings
-router.route("/addListing")
-.post(addListing);
-
-
-
-
+router.post("/addListing",upload,addListing);
 
 export default router;
 

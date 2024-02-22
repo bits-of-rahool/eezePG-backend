@@ -58,6 +58,10 @@ const listingSchema = new Schema({
         type:String,
         required:true
     }],
+    photos: {
+        type: [String],
+        required: true
+    }
 
     //eeze verified??
 })
@@ -65,6 +69,8 @@ const listingSchema = new Schema({
 function isLatitude(lat) {
     return -90 <= lat && lat <= 90;
 }
+
+
 
 function isLongitude(lng) {
 return -180 <= lng && lng <= 180;
@@ -76,3 +82,8 @@ Listing.schema.index({ location: '2dsphere' });
 
 
 export {Listing}
+
+
+
+
+"Cooler","AC","Stove","Electricity","RO","Furniture","parking"

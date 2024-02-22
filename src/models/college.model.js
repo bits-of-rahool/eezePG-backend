@@ -41,9 +41,6 @@ return -180 <= lng && lng <= 180;
 const College = model('College', collegeSchema);
 College.schema.index({ location: '2dsphere' });
 
-// write refersh token and access token
-// pre save for password encryption
-// pre save for username,email lowercase
-// pre save for fullname uppercase
+
 
 export {College}

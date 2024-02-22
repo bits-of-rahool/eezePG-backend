@@ -1,9 +1,8 @@
 import { 
     addCollege,
-    allListing,
-    deleteListing,
-    updateListing,
-    listingByID,
+    deleteCollege,
+    updateCollege,
+    allCollege
 } from "../controllers/college.controller.js";
 
 import { Router } from "express";
@@ -12,13 +11,12 @@ const router = Router();
 
 //allListings
 router
-.get('/',allListing);
+.get('/',allCollege);
 
 //listings by ID
 router.route('/:listingID')
-.get(listingByID)
-.delete(deleteListing)
-.put(updateListing);
+.delete(deleteCollege)
+.put(updateCollege);
 
 
 //Create listings
@@ -30,4 +28,7 @@ router.route("/add-college")
 
 
 export default router;
+
+
+
 

@@ -12,9 +12,5 @@ const bookmarkSchema = new Schema({
 })
 const Bookmark = model('Bookmark', bookmarkSchema);
 
-// write refersh token and access token
-// pre save for password encryption
-// pre save for username,email lowercase
-// pre save for fullname uppercase
 
 export {Bookmark}

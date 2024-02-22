@@ -13,13 +13,22 @@ const addListing = async (req, res) => {
         rent,
         contract,
         availability,
-        amenities
+        amenities,
     } = req.body;
     
     const propertyOwnerID = new mongoose.Types.ObjectId(propertyOwner); // string to objectID
+    const photos = req.files;
+    if(!photos) return res.status(400).json({ message: 'please upload photos' });
+    console.log(photos)
+
+    const coordinates  = location.split(",") 
+    location ={
+        type:'Point',
+        coordinates
+    }
+    amenities = amenities.split(",")
     
     try {
-        
         const newListing = await Listing.create({
         name,
         description,
@@ -30,7 +39,7 @@ const addListing = async (req, res) => {
         rent,
         contract,
         availability,
-        amenities
+        amenities,
         })
 
         const updatedOwner = await Owner.findOneAndUpdate({_id:propertyOwnerID},{$push:{properties:newListing._id}},{new:true});
@@ -46,8 +55,7 @@ const addListing = async (req, res) => {
 }
 const listingByID = async (req,res)=>{
     if(!req.params.listingID){
-        console.log(req.params)
-        res.json("listing by ID not provided")
+        res.json("listing ID not provided")
     }
     else{
         const id=new mongoose.Types.ObjectId(req.params.listingID);
@@ -63,12 +71,13 @@ const listingByID = async (req,res)=>{
                 select:"firstName lastName verified -_id"
             },
         }).select('-_id -location').exec();
-        res.status(200).json(property)
+        if(!property) res.status(404).json("property not found")
+        else res.status(200).json(property)
     }
 }
 const listingsNear = async (req,res)=>{
     const {lat,long,dist}=req.params
-    //check lats and long 
+    //check lat and long 
     //check valid distacne -dist 
     const point ={
         type:'Point',
@@ -98,35 +107,40 @@ const listingsNear = async (req,res)=>{
                 }
             }
         ])
-        
         res.status(200).json({found})
     } catch (error) {
         console.log(`error while getting Listings ${error}`)
     }
 
 }
- const deleteListing = async (req,res)=>{
-    if(req.params.listingID){
-        res.json("listing by ID not implemented")
-    }
-    else{
-        res.status(500).json("not implemented")
-    }
-}
- const updateListing = async (req,res)=>{
-    if(req.params.listingID){
-        res.json("listing by ID not implemented")
-    }
-    else{
-        res.status(500).json("not implemented")
+const deleteListing = async (req, res) => {
+    const listingId = req.params.listingID;
+
+    try {
+        // check listing exist
+        const listing = await Listing.findById(listingId);
+        if (!listing) {
+            return res.status(404).json({ message: 'Listing not found' });
+        }
+        await Listing.findByIdAndDelete(listingId); //delete
+
+        await Owner.updateOne({ properties: listingId }, { $pull: { properties: listingId } }); // update owner
+
+        res.status(200).json({ message: 'Listing deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting listing:', error);
+        res.status(500).json({ message: 'An error occurred while deleting listing' });
     }
 }
 const allListing = async (req,res)=>{
-        // sorting filtering pagination
+        // do sorting filtering pagination
         const listings =  await Listing.find({})
         .select(' -location')
         .exec();
         res.status(200).json(listings)
+}
+const updateListing = async (req,res)=>{
+        res.json("Not implemented yet")
 }
 
 export 

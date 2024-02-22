@@ -8,9 +8,4 @@ const studentSchema = new Schema({
 })
 const Student = model('Student', studentSchema);
 
-// write refersh token and access token
-// pre save for password encryption
-// pre save for username,email lowercase
-// pre save for fullname uppercase
-
 export {Student}

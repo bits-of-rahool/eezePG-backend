@@ -10,7 +10,7 @@ const reviewSchema = new Schema({
         required:true
     },
     rating:{
-        type:[Number],
+        type:Number,
         enum:[1,2,3,4,5],
         required:true
     },
@@ -22,9 +22,5 @@ const reviewSchema = new Schema({
 
 const Review = model('Review', reviewSchema);
 
-// write refersh token and access token
-// pre save for password encryption
-// pre save for username,email lowercase
-// pre save for fullname uppercase
 
 export {Review}
