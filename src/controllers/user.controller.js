@@ -1,6 +1,7 @@
 import {User} from '../models/user.model.js';
 import { Owner } from '../models/owner.model.js';
 import {Student} from "../models/student.model.js"
+import mongoose from 'mongoose';
 import jwt from "jsonwebtoken"
 
 const registerUser = async (req, res) => {
@@ -51,7 +52,7 @@ const loginUser = async (req,res)=>{
                 };
                 res.status(200)
                 .cookie("token", token, options)
-                .send(`logged in as ${req.user.firstName}`)
+                .send(`logged in as ${firstName}`)
         } catch (error) {
             res.status(501).json("error while generating token")
         }
@@ -68,7 +69,7 @@ const deleteUser =async (req, res) => {
         if (user.role === 'owner') {
             await Owner.findOneAndDelete({ user: userId });
 
-            await Listing.deleteMany({ propertyOwner: user._id }); // delete all propeety
+            await Listing.deleteMany({ propertyOwner: user._id }); // delete all property
         }
 
         await User.findByIdAndDelete(userId);
@@ -80,15 +81,56 @@ const deleteUser =async (req, res) => {
     }
 } 
 const updateUser =async (req,res)=>{
-    res.status(200).json("not implemented");
+    if(!req.params.userID){
+        res.json("user ID not provided")
+    }
+    else{
+        const id=new mongoose.Types.ObjectId(req.params.userID);
+
+        const user = await User.findOne({_id:id});
+        
+        if(!user) res.status(404).json("user not found")
+
+        const {firstName,lastName,email,idProof} = req.body;
+        const updates = {};
+        if (firstName) updates.firstName = firstName;
+        if (lastName) updates.lastName = lastName;
+        if (email) updates.email = email;
+        if (idProof) updates.idProof = idProof;
+        const updatedUser = await User.findOneAndUpdate( {_id:id},updates,{new:true} )
+
+        res.status(200).json({message:"User updated",updatedUser})
+    }
 }
 const showUser =async (req,res)=>{
-    res.status(200).json("not implemented");
+    if(!req.params.userID){
+        res.json("user ID not provided")
+    }
+    else{
+        try {
+            const id=new mongoose.Types.ObjectId(req.params.userID);
+            const user =  await User.findOne({_id:id})
+            res.status(200).json(user) 
+        } catch (error) {
+                console.log(error);
+        }
+    }
+}
+const allUser = async (_,res)=>{
+    try {
+        const users =  await User.find({})
+        res.status(200).json(users) 
+    } catch (error) {
+            console.log(error);
+    }
 }
 
 export 
 {
     registerUser,
     loginUser,
-    deleteUser
+    deleteUser,
+    updateUser,
+    showUser,
+    allUser
 }

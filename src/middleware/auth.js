@@ -43,15 +43,33 @@ const verifyToken = async (req, res, next) => {
     if (!token) {
         return res.status(403).json("Unauthorized access, please login");
     }
-
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
+
         next();
     } catch (error) {
-        console.log("Error during JWT verification: " + error.message);
+        // console.log("Error during JWT verification: " + error.message);
         return res.status(403).json("Unauthorized access, please login");
     }
 };
 
-export default verifyToken;
+const googleCallback = (req, res) => {
+    const { _id, firstName, lastName, email, role, verified } = req.user;
+    try {
+      const token = jwt.sign({ _id, firstName, lastName, email, role, verified }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRY });
+      const options = {
+        httpOnly: true,
+      };
+      res.status(200)
+        .cookie("token", token, options)
+        .redirect("/");
+    } catch (error) {
+      console.log("error while generating token");
+    }
+  }
+
+export {
+    verifyToken,
+    googleCallback
+};

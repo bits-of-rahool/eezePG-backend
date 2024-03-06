@@ -22,5 +22,4 @@ const reviewSchema = new Schema({
 
 const Review = model('Review', reviewSchema);
 
-
 export {Review}

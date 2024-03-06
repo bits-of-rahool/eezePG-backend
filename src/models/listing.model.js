@@ -70,8 +70,6 @@ function isLatitude(lat) {
     return -90 <= lat && lat <= 90;
 }
 
-
-
 function isLongitude(lng) {
 return -180 <= lng && lng <= 180;
 }
@@ -79,11 +77,4 @@ return -180 <= lng && lng <= 180;
 const Listing = model('Listing', listingSchema);
 Listing.schema.index({ location: '2dsphere' });
 
-
-
 export {Listing}
-
-
-
-
-"Cooler","AC","Stove","Electricity","RO","Furniture","parking"

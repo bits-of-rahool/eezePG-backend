@@ -8,5 +8,4 @@ const ownerSchema = new Schema({
 })
 const Owner = model('Owner', ownerSchema);
 
-
 export {Owner}

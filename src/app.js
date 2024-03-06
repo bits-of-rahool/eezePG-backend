@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from "cors"
 import cookieParser from 'cookie-parser';
-import verifyToken from './middleware/auth.js';
+import {verifyToken} from './middleware/auth.js';
 import passport from 'passport';
+import swaggerUi from 'swagger-ui-express'
+import { swaggerSpec } from './utils/swagger.js';
 
 const app= express();
 
@@ -34,5 +36,6 @@ import collegeRouter from "./routes/college.route.js"
 app.use('/api/user', userRouter);
 app.use("/api/listing",verifyToken,listingRouter)
 app.use("/api/college",verifyToken,collegeRouter)
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export {app}

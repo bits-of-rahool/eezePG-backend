@@ -17,9 +17,10 @@ const addListing = async (req, res) => {
     } = req.body;
     
     const propertyOwnerID = new mongoose.Types.ObjectId(propertyOwner); // string to objectID
-    const photos = req.files;
-    if(!photos) return res.status(400).json({ message: 'please upload photos' });
+
+    const photos = req.files; // uploaded photos
     console.log(photos)
+    if(!photos) return res.status(400).json({ message: 'please upload photos' });
 
     const coordinates  = location.split(",") 
     location ={
@@ -77,7 +78,7 @@ const listingByID = async (req,res)=>{
 }
 const listingsNear = async (req,res)=>{
     const {lat,long,dist}=req.params
-    //check lat and long 
+    //check lat and long
     //check valid distacne -dist 
     const point ={
         type:'Point',

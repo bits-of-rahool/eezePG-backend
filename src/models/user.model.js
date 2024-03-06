@@ -17,7 +17,6 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        //will implement validation at the frontend
     },
     role:{
         type: String,
