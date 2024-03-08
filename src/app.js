@@ -31,11 +31,12 @@ app.get('/healthcheck', (req, res) => {
 import userRouter from './routes/user.route.js';
 import listingRouter from "./routes/listing.route.js"
 import collegeRouter from "./routes/college.route.js"
-
+import bookmarkRouter from "./routes/bookmark.route.js"
 //using routes
 app.use('/api/user', userRouter);
 app.use("/api/listing",verifyToken,listingRouter)
 app.use("/api/college",verifyToken,collegeRouter)
+app.use("/api/bookmark",verifyToken,bookmarkRouter)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export {app}

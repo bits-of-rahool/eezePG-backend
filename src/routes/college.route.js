@@ -18,17 +18,8 @@ router.route('/:listingID')
 .delete(deleteCollege)
 .put(updateCollege);
 
-
 //Create listings
 router.route("/add-college")
 .post(addCollege);
 
-
-
-
-
 export default router;
-
-
-
-
