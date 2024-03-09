@@ -10,7 +10,7 @@ const bookmarkSchema = new Schema({
         required:true
     },
 })
-const Bookmark = model('Bookmark', bookmarkSchema);
 
+const Bookmark = model('Bookmark', bookmarkSchema);
 
 export {Bookmark}

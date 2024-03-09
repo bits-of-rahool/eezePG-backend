@@ -41,6 +41,4 @@ return -180 <= lng && lng <= 180;
 const College = model('College', collegeSchema);
 College.schema.index({ location: '2dsphere' });
 
-
-
 export {College}

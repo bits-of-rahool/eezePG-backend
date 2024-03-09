@@ -67,7 +67,7 @@ const googleCallback = (req, res) => {
     } catch (error) {
       console.log("error while generating token");
     }
-  }
+};
 
 export {
     verifyToken,

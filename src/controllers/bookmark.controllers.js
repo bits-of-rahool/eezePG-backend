@@ -1,5 +1,4 @@
 import {Bookmark} from '../models/bookmark.model.js'
-import mongoose from 'mongoose';
 
 const addBookmark = async(req,res)=>{
     try {
@@ -14,9 +13,7 @@ const addBookmark = async(req,res)=>{
     } catch (error) {
          res.json({error:error.message});
     }
- 
- }
-
+}
 const deleteBookmark = async(req,res)=>{
     try {
         const deletedBookmark = await Bookmark.findOneAndDelete({_id:req.params.bookmarkId},{new:true})
