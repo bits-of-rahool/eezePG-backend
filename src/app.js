@@ -3,8 +3,6 @@ import cors from "cors"
 import cookieParser from 'cookie-parser';
 import {verifyToken} from './middleware/auth.js';
 import passport from 'passport';
-import swaggerUi from 'swagger-ui-express'
-import { swaggerSpec } from './utils/swagger.js';
 
 const app= express();
 
@@ -39,6 +37,5 @@ app.use("/api/listing",verifyToken,listingRouter)
 app.use("/api/college",verifyToken,collegeRouter)
 app.use("/api/bookmark",verifyToken,bookmarkRouter)
 app.use("/api/review",verifyToken,reviewRouter)
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 export {app}

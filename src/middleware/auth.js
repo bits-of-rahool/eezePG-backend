@@ -31,7 +31,6 @@ passport.use(new GoogleStrategy({
             email:profile.email,
             avatar:profile.picture
         })
-
         user = await newUser.save();
     }
     return done(null, user);

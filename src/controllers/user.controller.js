@@ -1,6 +1,11 @@
 import {User} from '../models/user.model.js';
 import { Owner } from '../models/owner.model.js';
 import {Student} from "../models/student.model.js"
+import { userRegisterValidation } from '../validations/user.validation.js';
+import joi from 'joi';
+
+const { ValidationError } = joi;
+
 import mongoose from 'mongoose';
 import jwt from "jsonwebtoken"
 
@@ -15,7 +20,8 @@ const registerUser = async (req, res) => {
     } = req.body;
     
     try {
-        
+        const validatedUser = await userRegisterValidation.validateAsync(req.body);
+        console.log(validatedUser);
         const newUser = new User({
             firstName,
             lastName,
@@ -23,24 +29,25 @@ const registerUser = async (req, res) => {
             role,
             password,
             idProof,
-        })
-
+        });
+    
         const createdUser = await newUser.save();
-
-        if(createdUser.role=='owner'){
-            await Owner.create({user:createdUser._id})
+    
+        if (createdUser.role === 'owner') {
+            await Owner.create({ user: createdUser._id });
+        } else {
+            await Student.create({ user: createdUser._id });
         }
-        else{
-            await Student.create({user:createdUser._id});
-        }
-        newUser.password = undefined; 
+        newUser.password = undefined;
         res.status(200).json({
-        message:"user registered successfully",
-        createdUser,
-        }
-        )
+            message: "User registered successfully",
+            createdUser,
+        });
     } catch (error) {
-        res.status(403).json({error:error.message})
+        if (error instanceof ValidationError) {
+            return res.status(400).json({ error: error.details[0].message });
+        }
+        res.status(500).json({ error: error.message });
     }
 }
 const loginUser = async (req,res)=>{

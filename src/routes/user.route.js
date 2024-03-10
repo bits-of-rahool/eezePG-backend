@@ -1,16 +1,15 @@
 import { Router } from "express";
 import passport from "passport";
-import { User } from "../models/user.model.js";
 import { registerUser, loginUser, deleteUser,showUser,updateUser,allUser } from "../controllers/user.controller.js";
-import { googleCallback } from "../middleware/auth.js";
+import { googleCallback, verifyToken } from "../middleware/auth.js";
 
 const router = Router();
 
 router.post("/register", registerUser);
 
-router.delete("/delete-user/:userId", deleteUser);
+router.delete("/delete-user/:userId",verifyToken, deleteUser);
 
-router.get('/all',allUser)
+router.get('/all',verifyToken,allUser)
 
 router.post("/login", passport.authenticate('local', { session: false }), loginUser);
 
