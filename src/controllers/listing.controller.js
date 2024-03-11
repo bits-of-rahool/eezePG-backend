@@ -1,6 +1,9 @@
 import {Listing} from '../models/listing.model.js'
 import {Owner} from '../models/owner.model.js'
 import mongoose from 'mongoose';
+import { listingValidation } from '../validations/listing.validation.js';
+import Joi from 'joi';
+const { ValidationError } = Joi;
 
 const addListing = async (req, res) => {
     let {
@@ -19,8 +22,7 @@ const addListing = async (req, res) => {
     const propertyOwnerID = new mongoose.Types.ObjectId(propertyOwner); // string to objectID
 
     const photos = req.files; // uploaded photos
-    console.log(photos)
-    if(!photos) return res.status(400).json({ message: 'please upload photos' });
+    if(!photos.length) return res.status(400).json({ message: 'please upload photos' });
 
     const coordinates  = location.split(",") 
     location ={
@@ -30,6 +32,9 @@ const addListing = async (req, res) => {
     amenities = amenities.split(",")
     
     try {
+
+        const validatedListing = await listingValidation.validateAsync(req.body);
+
         const newListing = await Listing.create({
         name,
         description,
@@ -51,6 +56,7 @@ const addListing = async (req, res) => {
         }
         )
     } catch (error) {
+        if(error instanceof ValidationError) res.status(401).json({message:"error during validation",error:error.details[0].message})
         console.log("error while adding listing: "+error)
     }
 }

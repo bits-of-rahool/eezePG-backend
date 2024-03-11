@@ -9,6 +9,9 @@ const userRegisterValidation = Joi.object({
     idProof:Joi.string().allow(null, ''),
     verified:Joi.boolean().allow(null, ''),
     avatar:Joi.string().allow(null, '')
-
 })
-export {userRegisterValidation}
+const userLoginValidation = Joi.object({
+    email:Joi.string().email().required(),
+    password:Joi.string().required().min(6).max(20),
+})
+export {userRegisterValidation,userLoginValidation}
