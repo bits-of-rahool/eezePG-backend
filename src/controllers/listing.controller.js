@@ -3,6 +3,7 @@ import {Owner} from '../models/owner.model.js'
 import mongoose from 'mongoose';
 import { listingValidation } from '../validations/listing.validation.js';
 import Joi from 'joi';
+import { uploadToCloudinary } from '../utils/cloudinary.js';
 const { ValidationError } = Joi;
 
 const addListing = async (req, res) => {
@@ -23,7 +24,8 @@ const addListing = async (req, res) => {
 
     const photos = req.files; // uploaded photos
     if(!photos.length) return res.status(400).json({ message: 'please upload photos' });
-
+    console.log(photos[0].path);
+    const cloudLink = await uploadToCloudinary(photos[0].path)
     const coordinates  = location.split(",") 
     location ={
         type:'Point',
@@ -46,6 +48,7 @@ const addListing = async (req, res) => {
         contract,
         availability,
         amenities,
+        photos:cloudLink
         })
 
         const updatedOwner = await Owner.findOneAndUpdate({_id:propertyOwnerID},{$push:{properties:newListing._id}},{new:true});
