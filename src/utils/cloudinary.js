@@ -1,24 +1,29 @@
-import {v2 as cloudinary}  from "cloudinary"
+import {v2}  from "cloudinary"
 
-cloudinary.config({
+v2.config({
     cloud_name:process.env.CLOUD_NAME,
     api_key:process.env.CLOUDINARY_API_KEY,
     api_secret:process.env.CLOUDINARY_API_SECRET,
     secure:true
 })
 
-export const uploadToCloudinary =async (filePath)=>{
+export const uploadToCloudinary =async (files)=>{
     console.log("uploading to cloud");
-    if(!filePath){
+
+    if(!files){
         return null;
     }else{
-        const result = await cloudinary.uploader.upload(filePath,{resource_type:"auto"},(err,result)=>{
-            console.log("error while uploading to clouidnary"+err);
+        
+        const photoPromises = files.map(async (elem)=>{
+             try {
+                return await v2.uploader.upload(elem.path,{resource_type:"auto"})
+             } catch (error) {
+                console.log(error);
+             }
         })
-        console.log(result.url);
-        return result.url
+
+        const resolved = await Promise.all(photoPromises);
+        const urls = resolved.map(elem=>elem.url)
+        return urls
     }
 }
-
-
-
