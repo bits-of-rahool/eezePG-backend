@@ -31,11 +31,13 @@ import listingRouter from "./routes/listing.route.js"
 import collegeRouter from "./routes/college.route.js"
 import bookmarkRouter from "./routes/bookmark.route.js"
 import reviewRouter from "./routes/review.route.js"
+import amenitiesRouter from "./routes/amenities.route.js"
 //using routes
 app.use('/api/user', userRouter);
 app.use("/api/listing",verifyToken,listingRouter)
 app.use("/api/college",verifyToken,collegeRouter)
 app.use("/api/bookmark",verifyToken,bookmarkRouter)
 app.use("/api/review",verifyToken,reviewRouter)
+app.use("/api/amenities",verifyToken,amenitiesRouter)
 
 export {app}

@@ -24,7 +24,7 @@ const addListing = async (req, res) => {
 
     const photos = req.files; // uploaded photos
     if(!photos.length) return res.status(400).json({ message: 'please upload photos' });
-    const cloudLinks = await uploadToCloudinary(photos)??"jj"
+    const cloudLinks = await uploadToCloudinary(photos)??"photos not recieved"
     const coordinates  = location.split(",") 
     location ={
         type:'Point',

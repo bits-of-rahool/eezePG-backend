@@ -1,4 +1,4 @@
-import {Schema,model} from "mongoose";
+import {Schema,model, mongo} from "mongoose";
 
 const listingSchema = new Schema({
     name:{
@@ -66,6 +66,16 @@ const listingSchema = new Schema({
     //eeze verified??
 })
 
+const amenitiesSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+        unique: true, 
+    },
+    description:String,
+    icon:String 
+})
+
 function isLatitude(lat) {
     return -90 <= lat && lat <= 90;
 }
@@ -75,6 +85,8 @@ return -180 <= lng && lng <= 180;
 }
 
 const Listing = model('Listing', listingSchema);
+const Amenities = model('Amenities', amenitiesSchema);
+
 Listing.schema.index({ location: '2dsphere' });
 
-export {Listing}
+export {Listing,Amenities}

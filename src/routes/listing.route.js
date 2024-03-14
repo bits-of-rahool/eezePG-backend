@@ -18,7 +18,6 @@ router.route('/:listingID')
     .delete(deleteListing)
     .put(updateListing);
 
-
 router.get('/search/:lat/:long/:dist', listingsNear);
 
 router.post("/addListing", upload, addListing);

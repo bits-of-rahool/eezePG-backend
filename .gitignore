@@ -1,5 +1,6 @@
 node_modules
 build
+public/uploads
 .env
 .env.development.local
 .env.test.local

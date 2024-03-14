@@ -8,12 +8,10 @@ v2.config({
 })
 
 export const uploadToCloudinary =async (files)=>{
-    console.log("uploading to cloud");
 
     if(!files){
         return null;
     }else{
-        
         const photoPromises = files.map(async (elem)=>{
              try {
                 return await v2.uploader.upload(elem.path,{resource_type:"auto"})
@@ -21,7 +19,6 @@ export const uploadToCloudinary =async (files)=>{
                 console.log(error);
              }
         })
-
         const resolved = await Promise.all(photoPromises);
         const urls = resolved.map(elem=>elem.url)
         return urls
