@@ -1,4 +1,5 @@
 import {v2}  from "cloudinary"
+import { promises as fs } from 'fs';
 
 v2.config({
     cloud_name:process.env.CLOUD_NAME,
@@ -9,18 +10,18 @@ v2.config({
 
 export const uploadToCloudinary =async (files)=>{
 
-    if(!files){
+    if(!files.length){
+        console.log(files);
         return null;
     }else{
-        const photoPromises = files.map(async (elem)=>{
-             try {
-                return await v2.uploader.upload(elem.path,{resource_type:"auto"})
-             } catch (error) {
+        try {
+            const uploadPromises = files.map(async (elem)=> await v2.uploader.upload(elem.path,{resource_type:"auto"}));
+            const resolved = await Promise.all(uploadPromises);
+            const urls = resolved.map(elem=>elem.url)
+            files.map(async (elem)=> await fs.unlink(elem.path));
+            return urls
+        } catch (error) {
                 console.log(error);
-             }
-        })
-        const resolved = await Promise.all(photoPromises);
-        const urls = resolved.map(elem=>elem.url)
-        return urls
+        }
     }
 }

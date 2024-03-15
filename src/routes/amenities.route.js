@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { Amenities } from "../models/listing.model.js";
-// import { addBookmark, allBookmarks, deleteBookmark } from "../controllers/bookmark.controllers.js";
 
 const router = Router();
 
@@ -19,8 +18,16 @@ router.post("/add-amenity",async (req,res)=>{
         }
 })
 
-router.delete("/delete-amenity/:amenityId",()=>{})
-router.get("/get-amenity/:userId",async (req,res)=>{})
+router.delete("/delete-amenity/:name",async (req,res)=>{
+    const name=req.params.name;
+    try {
+        const deleted = await Amenities.deleteOne({name});
+        if(!deleted) return res.json(`No amenity with the name: ${name}`)
+        res.status(201).json(`amenity ${name} deleted successfully`)
+    } catch (error) {
+        res.status(401).json("something went wrong when deleting amenitiy");
+    }
+})
 
 router.get("/all-amenities",async (req,res)=>{
     try {
