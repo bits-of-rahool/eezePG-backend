@@ -1,5 +1,5 @@
 import {College} from '../models/college.model.js'
-import mongoose from 'mongoose';
+import { ApiError } from '../utils/apiError.js';
 
 const addCollege = async (req, res) => {
     let {
@@ -8,7 +8,6 @@ const addCollege = async (req, res) => {
         address,
     } = req.body;
     
-    
     try {
         
         const newCollege = await College.create({
@@ -16,14 +15,13 @@ const addCollege = async (req, res) => {
         location,
         address,
         })
-        
-        res.status(200).json({
-        message:"Listing added successfully",
-        newCollege
-        }
-        )
-    } catch (error) {
-        res.status(501).json({message:"error while adding listing: "})
+
+        if(!newCollege) throw new ApiError(401, "testing error", false);
+            
+        res.status(200).json({message:"Listing added successfully",newCollege})
+
+    } catch (err) {
+        res.status(err.statusCode).json(err)
     }
 }
  const deleteCollege = async (req,res)=>{

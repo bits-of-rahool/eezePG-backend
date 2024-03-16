@@ -13,7 +13,7 @@ const router = Router();
 
 router.get('/', allListing);
 
-router.route('/:listingID')
+router.route('/id/:listingID')
     .get(listingByID)
     .delete(deleteListing)
     .put(updateListing);

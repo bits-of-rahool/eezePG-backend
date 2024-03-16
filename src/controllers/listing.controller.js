@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import { listingValidation } from '../validations/listing.validation.js';
 import Joi from 'joi';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
+import { ApiError } from '../utils/apiError.js';
 const { ValidationError } = Joi;
 
 const addListing = async (req, res) => {
@@ -63,25 +64,35 @@ const addListing = async (req, res) => {
     }
 }
 const listingByID = async (req,res)=>{
-    if(!req.params.listingID){
-        res.json("listing ID not provided")
-    }
-    else{
-        const id=new mongoose.Types.ObjectId(req.params.listingID);
-        const property = await Listing.findOne({_id:id})
-        .populate({
-            path:"propertyOwner",
-            select:'-_id',
-            populate:{
-                path:'properties',
-            },
-            populate:{
-                path:'user',
-                select:"firstName lastName verified -_id"
-            },
-        }).select('-_id -location').exec();
-        if(!property) res.status(404).json("property not found")
-        else res.status(200).json(property)
+
+    try {
+        if(!req.params.listingID){
+            throw new ApiError(403,"listing ID not provided")
+        }
+        else{
+            const id=new mongoose.Types.ObjectId(req.params.listingID);
+            const property = await Listing.findOne({_id:id})
+            .populate({
+                path:"propertyOwner",
+                select:'-_id',
+                populate:{
+                    path:'properties',
+                },
+                populate:{
+                    path:'user',
+                    select:"firstName lastName verified -_id"
+                },
+            }).select('-_id -location').exec();
+            
+            if(!property) throw new ApiError(403,"no property with this id")
+            else res.status(200).json(property)
+        }
+    } catch (error) {
+        res.status(401).json({
+            statusCode:error.statusCode,
+            success:error.success,
+            message:error.message,
+        })
     }
 }
 const listingsNear = async (req,res)=>{
