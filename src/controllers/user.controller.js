@@ -8,6 +8,7 @@ const { ValidationError } = joi;
 
 import mongoose from 'mongoose';
 import jwt from "jsonwebtoken"
+import { ApiResponse } from '../utils/ApiResponse.js';
 
 const registerUser = async (req, res) => {
     const {
@@ -39,15 +40,12 @@ const registerUser = async (req, res) => {
             await Student.create({ user: createdUser._id });
         }
         newUser.password = undefined;
-        res.status(200).json({
-            message: "User registered successfully",
-            createdUser,
-        });
+        res.send(new ApiResponse(201,"User Created Successfully",createdUser))
     } catch (error) {
         if (error instanceof ValidationError) {
-            return res.status(400).json({ error: error.details[0].message });
+            return res.status(400).json({ message: error.details[0].message,success:false });
         }
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 }
 const loginUser = async (req,res)=>{

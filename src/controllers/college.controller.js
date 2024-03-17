@@ -1,5 +1,5 @@
 import {College} from '../models/college.model.js'
-import { ApiError } from '../utils/apiError.js';
+import { ApiError } from '../utils/ApiError.js';
 
 const addCollege = async (req, res) => {
     let {

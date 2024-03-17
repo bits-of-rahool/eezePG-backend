@@ -4,7 +4,8 @@ import mongoose from 'mongoose';
 import { listingValidation } from '../validations/listing.validation.js';
 import Joi from 'joi';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
-import { ApiError } from '../utils/apiError.js';
+import { ApiError } from '../utils/ApiError.js';
+import { ApiResponse } from '../utils/ApiResponse.js';
 const { ValidationError } = Joi;
 
 const addListing = async (req, res) => {
@@ -85,7 +86,7 @@ const listingByID = async (req,res)=>{
             }).select('-_id -location').exec();
             
             if(!property) throw new ApiError(403,"no property with this id")
-            else res.status(200).json(property)
+            else res.send(new ApiResponse(200,"Property Fetched Successfully",property))
         }
     } catch (error) {
         res.status(401).json({

@@ -11,7 +11,7 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get('/', allListing);
+router.get('/all', allListing);
 
 router.route('/id/:listingID')
     .get(listingByID)
