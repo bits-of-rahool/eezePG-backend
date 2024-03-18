@@ -3,13 +3,14 @@ import passport from "passport";
 import LocalStrategy from "passport-local";
 import GoogleStrategy from "passport-google-oauth2"
 import  {User} from "../models/user.model.js";
+import { ApiError } from '../utils/ApiError.js';
 import bcrypt from "bcryptjs"
 
 passport.use(new LocalStrategy(
     async function(email, password, done) {
         let user = await User.findOne({email}).select("-idProof");
-        if(!user) return done(null, false,{message:"user not found"});
-        if(!bcrypt.compareSync(password,user.password)) return done(null, false,{message:"incorrect password"});
+        if(!user) return done(null, new ApiError(403,"User not found"),{message:"user not found"});
+        if(!bcrypt.compareSync(password,user.password)) return done(null, new ApiError(403,"Password is incorrect"),{message:"incorrect password"});
         user["password"]='';
         return done(null, user);
     }

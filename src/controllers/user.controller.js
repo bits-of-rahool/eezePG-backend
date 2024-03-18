@@ -9,6 +9,7 @@ const { ValidationError } = joi;
 import mongoose from 'mongoose';
 import jwt from "jsonwebtoken"
 import { ApiResponse } from '../utils/ApiResponse.js';
+import { ApiError } from '../utils/ApiError.js';
 
 const registerUser = async (req, res) => {
     const {
@@ -31,15 +32,16 @@ const registerUser = async (req, res) => {
             password,
             idProof,
         });
-    
+        
         const createdUser = await newUser.save();
-    
+        
         if (createdUser.role === 'owner') {
             await Owner.create({ user: createdUser._id });
         } else {
             await Student.create({ user: createdUser._id });
         }
         newUser.password = undefined;
+
         res.send(new ApiResponse(201,"User Created Successfully",createdUser))
     } catch (error) {
         if (error instanceof ValidationError) {
@@ -49,17 +51,20 @@ const registerUser = async (req, res) => {
     }
 }
 const loginUser = async (req,res)=>{
-    const {_id,firstName,lastName,email,role,verified} = req.user;
     try {
+        if(req.user instanceof ApiError) throw req.user;
+        const {_id,firstName,lastName,email,role,verified} = req.user;
             const token = jwt.sign({_id,firstName,lastName,email,role,verified},process.env.JWT_SECRET,{ expiresIn: process.env.JWT_EXPIRY })
             const options = {
                 httpOnly: true,
                 };
-                res.status(200)
-                .cookie("token", token, options)
-                .send(`logged in as ${firstName}`)
+                res.cookie("token", token, options).send(new ApiResponse(200,`Logged in as ${firstName}`))
         } catch (error) {
-            res.status(501).json("error while generating token")
+            res.send({
+                statusCode:error.statusCode,
+                message:error.message,
+                success:error.success
+            })
         }
 }
 const deleteUser =async (req, res) => {
