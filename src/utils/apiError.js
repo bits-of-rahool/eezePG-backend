@@ -7,3 +7,10 @@ class ApiError extends Error {
 }
 
 export { ApiError };
+
+
+// res.status(error.statusCode).json({
+//     statusCode:error.statusCode,
+//     message: error.message,
+//     success:error.success 
+// });

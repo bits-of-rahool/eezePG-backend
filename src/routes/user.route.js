@@ -22,8 +22,8 @@ router.get("/logout", (req, res) => {
   res.clearCookie("token").send("logged out");
 });
 
-router.route('/:userID')
-    .get(showUser)
-    .put(updateUser);
+router.put('/update/:userId',updateUser);
+
+router.get('/:userId',showUser)
 
 export default router;

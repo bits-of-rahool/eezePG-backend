@@ -6,7 +6,7 @@ import joi from 'joi';
 
 const { ValidationError } = joi;
 
-import mongoose from 'mongoose';
+import {Types} from 'mongoose';
 import jwt from "jsonwebtoken"
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -58,7 +58,7 @@ const loginUser = async (req,res)=>{
             const options = {
                 httpOnly: true,
                 };
-                res.cookie("token", token, options).send(new ApiResponse(200,`Logged in as ${firstName}`))
+                res.cookie("token", token, options).send(new ApiResponse(200,`Logged in as ${firstName} ${lastName}`))
         } catch (error) {
             res.send({
                 statusCode:error.statusCode,
@@ -68,12 +68,12 @@ const loginUser = async (req,res)=>{
         }
 }
 const deleteUser =async (req, res) => {
-    const userId = req.params.userId;
+    const {userId} = req.params;
 
     try {
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            throw new ApiError(402,"User not found")
         }
         // check owner
         if (user.role === 'owner') {
@@ -86,52 +86,76 @@ const deleteUser =async (req, res) => {
 
         res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
-        console.error('Error while deleting user:', error);
-        res.status(500).json({ message: error.message });
+        res.status(error.statusCode).json({
+            statusCode:error.statusCode,
+            message: error.message,
+            success:error.success 
+        });
     }
 } 
 const updateUser =async (req,res)=>{
-    if(!req.params.userID){
-        res.json("user ID not provided")
-    }
-    else{
-        const id=new mongoose.Types.ObjectId(req.params.userID);
-
-        const user = await User.findOne({_id:id});
-        
-        if(!user) res.status(404).json("user not found")
-
-        const {firstName,lastName,email,idProof} = req.body;
-        const updates = {};
-        if (firstName) updates.firstName = firstName;
-        if (lastName) updates.lastName = lastName;
-        if (email) updates.email = email;
-        if (idProof) updates.idProof = idProof;
-        const updatedUser = await User.findOneAndUpdate( {_id:id},updates,{new:true} )
-
-        res.status(200).json({message:"User updated",updatedUser})
-    }
-}
-const showUser =async (req,res)=>{
-    if(!req.params.userID){
-        res.json("user ID not provided")
+    if(!req.params.userId){
+        throw new ApiError(403,"User ID not provided")
     }
     else{
         try {
-            const id=new mongoose.Types.ObjectId(req.params.userID);
-            const user =  await User.findOne({_id:id})
-            res.status(200).json(user) 
+            const id=new Types.ObjectId(req.params.userId);
+            console.log(id);
+            const user = await User.findOne({_id:id});
+            
+            if(!user) throw new ApiError(404,"User not found")
+    
+            const {firstName,lastName,email,idProof} = req.body;
+            const updates = {};
+            if (firstName) updates.firstName = firstName;
+            if (lastName) updates.lastName = lastName;
+            if (email) updates.email = email;
+            if (idProof) updates.idProof = idProof;
+            const updatedUser = await User.findOneAndUpdate( {_id:id},updates,{new:true} )
+    
+            res.status(200).json({message:"User updated",updatedUser})
         } catch (error) {
-                console.log(error);
+                res.json({
+                statusCode:error.statusCode,
+                message: error.message,
+                success:error.success 
+            });
+        }
+    }
+}
+
+const showUser =async (req,res)=>{
+    if(!req.params.userId){
+        throw new ApiError(404,"User ID not given")
+    }
+    else{
+        try {
+            const id=new Types.ObjectId(req.params.listingId);
+
+            const user =  await User.findById(id)
+
+            if(!user) throw new ApiError(404,"User not found")
+
+            res.send(new ApiResponse(201,"user found",user))
+        } catch (error) {
+            res.status(error.statusCode).json({
+                statusCode:error.statusCode,
+                message: error.message,
+                success:error.success 
+            });
         }
     }
 }
 const allUser = async (_,res)=>{
     try {
         const users =  await User.find({})
-        res.status(200).json(users) 
+        res.send(new ApiResponse(200,"all users",users))
     } catch (error) {
-            console.log(error);
+        res.status(error.statusCode).json({
+            statusCode:error.statusCode,
+            message: error.message,
+            success:error.success 
+        });
     }
 }
 
