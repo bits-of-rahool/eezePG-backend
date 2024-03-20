@@ -23,20 +23,19 @@ const addListing = async (req, res) => {
     } = req.body;
     
     const propertyOwnerID = new mongoose.Types.ObjectId(propertyOwner); // string to objectID
-
+    try {
     const photos = req.files; // uploaded photos
-    if(!photos.length) return res.status(400).json({ message: 'please upload photos' });
+    if(!photos.length) throw new ApiError(400,"Please provide atleast one photo");
     const cloudLinks = await uploadToCloudinary(photos)??"photos not recieved"
-    const coordinates  = location.split(",") 
+    const coordinates  = location.split(",")
     location ={
         type:'Point',
         coordinates
     }
-    amenities = amenities.split(",")
-    
-    try {
 
-        const validatedListing = await listingValidation.validateAsync(req.body);
+        amenities = amenities.split(",")
+
+        await listingValidation.validateAsync(req.body);
 
         const newListing = await Listing.create({
         name,
@@ -52,16 +51,23 @@ const addListing = async (req, res) => {
         photos:cloudLinks
         })
 
-        const updatedOwner = await Owner.findOneAndUpdate({_id:propertyOwnerID},{$push:{properties:newListing._id}},{new:true});
+        await Owner.findOneAndUpdate({_id:propertyOwnerID},{$push:{properties:newListing._id}},{new:true});
 
-        res.status(200).json({
-        message:"Listing added successfully",
-        newListing
-        }
-        )
+        res.status(200).send(new ApiResponse(200,"Listing added successfully",newListing))
     } catch (error) {
-        if(error instanceof ValidationError) res.status(401).json({message:"error during validation",error:error.details[0].message})
-        console.log("error while adding listing: "+error)
+        console.log(error.message);
+        if(error instanceof ValidationError) return res.status(400).json({
+            statusCode:400,
+            message: error.details[0].message,
+            success:false 
+        }); // joi validation error
+        else{
+            return res.status(400).json({
+                statusCode:error.statusCode,
+                message: error.message,
+                success:error.success,
+            });
+        }
     }
 }
 const listingByID = async (req,res)=>{
@@ -97,15 +103,16 @@ const listingByID = async (req,res)=>{
     }
 }
 const listingsNear = async (req,res)=>{
-    const {lat,long,dist}=req.params
-    //check lat and long
-    //check valid distacne -dist 
-    const point ={
-        type:'Point',
-        coordinates:[parseFloat(long),parseFloat(lat)]
-    }
+    let {lat,long,dist}=req.params
+    lat = parseFloat(lat);
+    long = parseFloat(long);
     try {
         
+        if(lat>90 || lat<-90 || long>180 || long<-180 ) throw new ApiError(400,"Please provide valid coordinates")
+        const point ={
+            type:'Point',
+            coordinates:[long,lat]
+        }
         const found = await Listing.aggregate([
             { 
                 $geoNear: { 
@@ -128,37 +135,50 @@ const listingsNear = async (req,res)=>{
                 }
             }
         ])
-        res.status(200).json({found})
+        res.status(200).send(new ApiResponse(200,"search done",found))
     } catch (error) {
-        console.log(`error while getting Listings ${error}`)
+        res.status(error.statusCode).json({
+            statusCode:error.statusCode,
+            message: error.message,
+            success:error.success 
+        });
     }
 
 }
 const deleteListing = async (req, res) => {
-    const listingId = req.params.listingID;
-
     try {
+        const listingId = req.params.listingID;
+        if(!listingId) throw new ApiError(400,"Please provide Listing ID")
         // check listing exist
         const listing = await Listing.findById(listingId);
-        if (!listing) {
-            return res.status(404).json({ message: 'Listing not found' });
-        }
-        await Listing.findByIdAndDelete(listingId); //delete
-
+        if (!listing) throw new ApiError(400,"Listing not found")
+        const deletedListing = await Listing.findByIdAndDelete(listingId); //delete
         await Owner.updateOne({ properties: listingId }, { $pull: { properties: listingId } }); // update owner
-
-        res.status(200).json({ message: 'Listing deleted successfully' });
+        
+        return res.status(200).send(new ApiResponse(200,"Listing deleted successfully",deletedListing))
     } catch (error) {
-        console.error('Error deleting listing:', error);
-        res.status(500).json({ message: 'An error occurred while deleting listing' });
+
+        res.status(400).json({
+            statusCode:error.statusCode,
+            message: error.message,
+            success:error.success 
+        });
     }
 }
 const allListing = async (req,res)=>{
-        // do sorting filtering pagination
-        const listings =  await Listing.find({})
-        .select(' -location')
-        .exec();
-        res.status(200).json(listings)
+        // sorting filtering pagination
+        try {
+            const listings =  await Listing.find({})
+            .select(' -location')
+            .exec();
+            res.status(200).send(new ApiResponse(200,"All Listings Fecthed",listings))
+        } catch (error) {
+            res.status(error.statusCode).json({
+                statusCode:error.statusCode,
+                message: error.message,
+                success:error.success 
+            });
+        }
 }
 const updateListing = async (req,res)=>{
         res.json("Not implemented yet")

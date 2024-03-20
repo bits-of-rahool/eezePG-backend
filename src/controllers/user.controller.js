@@ -123,7 +123,6 @@ const updateUser =async (req,res)=>{
         }
     }
 }
-
 const showUser =async (req,res)=>{
     if(!req.params.userId){
         throw new ApiError(404,"User ID not given")

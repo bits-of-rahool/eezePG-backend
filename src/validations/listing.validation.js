@@ -7,7 +7,7 @@ const listingValidation = Joi.object({
     listingType:Joi.string().required(),
     location:Joi.string().required(),
     address:Joi.string().required(),
-    rent:Joi.string().required(),
+    rent:Joi.number().required(),
     contract:Joi.string().allow(" ",null),
     availability:Joi.string(),
     amenities:Joi.string().required()

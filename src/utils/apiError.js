@@ -14,3 +14,6 @@ export { ApiError };
 //     message: error.message,
 //     success:error.success 
 // });
+
+// throw new ApiError(400,"ooo")
+// new ApiResponse(200,"ooo",data)
