@@ -9,11 +9,11 @@ class ApiError extends Error {
 export { ApiError };
 
 
-// res.status(error.statusCode).json({
+// res.status(error.statusCode ||400).json({
 //     statusCode:error.statusCode,
 //     message: error.message,
 //     success:error.success 
 // });
 
 // throw new ApiError(400,"ooo")
-// new ApiResponse(200,"ooo",data)
+// res.status(200).send(new ApiResponse(200,"ooooooo",data));

@@ -1,4 +1,5 @@
 import {Bookmark} from '../models/bookmark.model.js'
+import { ApiResponse } from '../utils/ApiResponse.js';
 
 const addBookmark = async(req,res)=>{
     try {
@@ -7,27 +8,39 @@ const addBookmark = async(req,res)=>{
          property:req.params.listingId
       })
  
-     //  const bookmark = await Bookmark.find(createdMark).populate("property");
+      const bookmark = await Bookmark.find(createdMark).populate("property");
  
-      res.status(200).json(createdMark);
+      res.status(200).send(new ApiResponse(200,"Bookmark Added",bookmark));
     } catch (error) {
-         res.json({error:error.message});
+        res.status(error.statusCode||400).json({
+            statusCode:error.statusCode,
+            message: error.message,
+            success:error.success 
+        });
     }
 }
 const deleteBookmark = async(req,res)=>{
     try {
         const deletedBookmark = await Bookmark.findOneAndDelete({_id:req.params.bookmarkId},{new:true})
-        res.status(200).json(deletedBookmark)
+        res.status(200).send(new ApiResponse(200,"Bookmark Deleted Successfully",deletedBookmark));
     } catch (error) {
-        res.json({error:error.message})
+        res.status(error.statusCode||400 ).json({
+            statusCode:error.statusCode,
+            message: error.message,
+            success:error.success 
+        });
     }
 }
 const allBookmarks = async(req,res)=>{
     try {
         const allBookmarks = await Bookmark.find({user:req.params.userId})
-        res.status(200).json(allBookmarks)
+        res.status(200).send(new ApiResponse(200,"Bookmarks Fetched",allBookmarks));
     } catch (error) {
-        res.json({error:error.message})
+        res.status(error.statusCode ||400).json({
+            statusCode:error.statusCode,
+            message: error.message,
+            success:error.success 
+        });
     }
 }
 
