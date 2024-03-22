@@ -11,10 +11,10 @@ const router = Router();
 
 //allListings
 router
-.get('/',allCollege);
+.get('/all',allCollege);
 
 //listings by ID
-router.route('/:listingID')
+router.route('/:collegeId')
 .delete(deleteCollege)
 .put(updateCollege);
 
