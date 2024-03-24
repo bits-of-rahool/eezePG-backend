@@ -47,7 +47,11 @@ const registerUser = async (req, res) => {
         if (error instanceof ValidationError) {
             return res.status(400).json({ message: error.details[0].message,success:false });
         }
-        return res.status(500).json({ error: error.message });
+        return res.status(error.statusCode ||400).json({
+            statusCode:error.statusCode,
+            message: error.message,
+            success:error.success 
+        });
     }
 }
 const loginUser = async (req,res)=>{
@@ -84,9 +88,9 @@ const deleteUser =async (req, res) => {
 
         await User.findByIdAndDelete(userId);
 
-        res.status(200).json({ message: 'User deleted successfully' });
+        res.status(200).send(new ApiResponse(200,"User deleted successfully",null));
     } catch (error) {
-        res.status(error.statusCode).json({
+        res.status(error.statusCode || 400).json({
             statusCode:error.statusCode,
             message: error.message,
             success:error.success 
@@ -113,9 +117,9 @@ const updateUser =async (req,res)=>{
             if (idProof) updates.idProof = idProof;
             const updatedUser = await User.findOneAndUpdate( {_id:id},updates,{new:true} )
     
-            res.status(200).json({message:"User updated",updatedUser})
+            res.status(200).send(new ApiResponse(200,"User Updated Successfully",updatedUser));
         } catch (error) {
-                res.json({
+            res.status(error.statusCode ||400).json({
                 statusCode:error.statusCode,
                 message: error.message,
                 success:error.success 
@@ -137,7 +141,7 @@ const showUser =async (req,res)=>{
 
             res.send(new ApiResponse(201,"user found",user))
         } catch (error) {
-            res.status(error.statusCode).json({
+            res.status(error.statusCode||400).json({
                 statusCode:error.statusCode,
                 message: error.message,
                 success:error.success 
@@ -148,9 +152,10 @@ const showUser =async (req,res)=>{
 const allUser = async (_,res)=>{
     try {
         const users =  await User.find({})
+        
         res.send(new ApiResponse(200,"all users",users))
     } catch (error) {
-        res.status(error.statusCode).json({
+        res.status(error.statusCode || 400).json({
             statusCode:error.statusCode,
             message: error.message,
             success:error.success 

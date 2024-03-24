@@ -6,3 +6,4 @@ public/uploads
 .env.test.local
 .env.production.local
 .env.local
+TODOs.txt

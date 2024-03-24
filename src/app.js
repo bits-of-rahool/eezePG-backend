@@ -13,16 +13,8 @@ app.use(express.static('public'));
 app.use(cookieParser())
 app.use(passport.initialize())
 
-app.get('/',verifyToken, (req, res) => {
-    res.status(200).json({
-        message:"reached home route"
-    })
-})
-
-app.get('/healthcheck', (req, res) => {
-    res.status(200).json({
-        message:"The server is working fine"
-    })
+app.get('/api/healthcheck', (req, res) => {
+    res.status(200).send(new ApiResponse(200,"The Server Is Running Fine",null));
 })
 
 //import routes
@@ -32,6 +24,7 @@ import collegeRouter from "./routes/college.route.js"
 import bookmarkRouter from "./routes/bookmark.route.js"
 import reviewRouter from "./routes/review.route.js"
 import amenitiesRouter from "./routes/amenities.route.js"
+import { ApiResponse } from './utils/ApiResponse.js';
 //using routes
 app.use('/api/user', userRouter);
 app.use("/api/listing",verifyToken,listingRouter)

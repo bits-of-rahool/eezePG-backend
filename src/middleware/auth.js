@@ -40,17 +40,20 @@ passport.use(new GoogleStrategy({
 
 const verifyToken = async (req, res, next) => {
     const token = req.cookies.token;
-    if (!token) {
-        return res.status(403).json("Unauthorized access, please login");
-    }
     try {
+        if (!token) throw new ApiError(400,"Unauthorised access. Please Login")
+
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
 
         next();
     } catch (error) {
         // console.log("Error during JWT verification: " + error.message);
-        return res.status(403).json("Unauthorized access, please login");
+        return res.status(error.statusCode ||400).json({
+            statusCode:error.statusCode,
+            message: error.message,
+            success:error.success 
+        });
     }
 };
 

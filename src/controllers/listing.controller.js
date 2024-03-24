@@ -62,7 +62,7 @@ const addListing = async (req, res) => {
             success:false 
         }); // joi validation error
         else{
-            return res.status(400).json({
+            return res.status(error.statusCode||400).json({
                 statusCode:error.statusCode,
                 message: error.message,
                 success:error.success,
@@ -95,7 +95,7 @@ const listingByID = async (req,res)=>{
             else res.send(new ApiResponse(200,"Property Fetched Successfully",property))
         }
     } catch (error) {
-        res.status(401).json({
+        res.status(error.statusCode||401).json({
             statusCode:error.statusCode,
             success:error.success,
             message:error.message,
@@ -137,7 +137,7 @@ const listingsNear = async (req,res)=>{
         ])
         res.status(200).send(new ApiResponse(200,"search done",found))
     } catch (error) {
-        res.status(error.statusCode).json({
+        res.status(error.statusCode || 400).json({
             statusCode:error.statusCode,
             message: error.message,
             success:error.success 
@@ -158,7 +158,7 @@ const deleteListing = async (req, res) => {
         return res.status(200).send(new ApiResponse(200,"Listing deleted successfully",deletedListing))
     } catch (error) {
 
-        res.status(400).json({
+        res.status(error.statusCode || 400).json({
             statusCode:error.statusCode,
             message: error.message,
             success:error.success 
@@ -173,7 +173,7 @@ const allListing = async (req,res)=>{
             .exec();
             res.status(200).send(new ApiResponse(200,"All Listings Fecthed",listings))
         } catch (error) {
-            res.status(error.statusCode).json({
+            res.status(error.statusCode || 400).json({
                 statusCode:error.statusCode,
                 message: error.message,
                 success:error.success 
